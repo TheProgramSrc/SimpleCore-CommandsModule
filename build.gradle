@@ -1,0 +1,116 @@
+import org.apache.tools.ant.filters.ReplaceTokens
+
+plugins {
+    id 'org.jetbrains.kotlin.jvm' version '1.6.10'
+    id 'maven-publish'
+    id 'com.github.johnrengelman.shadow' version '7.1.2'
+    id 'org.jetbrains.dokka' version '1.6.0'
+}
+
+def projectVersion = (System.getenv("VERSION") ?: '0.1.0-SNAPSHOT').replaceFirst("v", "").replace('/', '')
+
+group 'xyz.theprogramsrc'
+version projectVersion
+description 'Command Builder module for SimpleCore API.'
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+
+    maven { url 'https://repo.theprogramsrc.xyz/repository/maven-public/' }
+    maven { url 'https://repo.theprogramsrc.xyz/repository/simplecoreapi-modules/' }
+    maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
+    maven { url 'https://oss.sonatype.org/content/repositories/releases/' }
+    maven { url 'https://oss.sonatype.org/content/groups/public/' }
+    maven { url 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/' }
+    maven { url 'https://repo.codemc.org/repository/maven-public/' }
+    maven { url 'https://jitpack.io/' }
+}
+
+dependencies {
+    compileOnly 'org.jetbrains.kotlin:kotlin-stdlib:1.6.10'
+    compileOnly 'org.spigotmc:spigot-api:1.18.1-R0.1-SNAPSHOT'
+    compileOnly 'net.md-5:bungeecord-api:1.18-R0.1-SNAPSHOT'
+    compileOnly 'xyz.theprogramsrc:simplecoreapi:0.3.1-SNAPSHOT'
+    compileOnly 'xyz.theprogramsrc:translationsmodule:0.1.5-SNAPSHOT'
+    compileOnly 'xyz.theprogramsrc:tasksmodule:0.1.0-SNAPSHOT'
+    compileOnly 'xyz.theprogramsrc:filesmodule:0.1.1-SNAPSHOT'
+
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.8.2'
+}
+
+shadowJar {
+    mergeServiceFiles()
+    exclude('**/*.kotlin_metadata')
+    exclude('**/*.kotlin_builtins')
+
+    archiveBaseName.set('CommandsModule')
+    archiveClassifier.set('')
+}
+
+test {
+    useJUnitPlatform()
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
+    withSourcesJar()
+}
+
+processResources {
+    filter ReplaceTokens, tokens: [name: rootProject.name, version: project.version.toString(), description: project.description, git_short: System.getenv("GIT_COMMIT_SHORT_HASH") ?: "unknown", git_full: System.getenv("GIT_COMMIT_LONG_HASH") ?: "unknown"]
+}
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
+
+tasks.withType(Copy) {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
+tasks.withType(Jar) {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
+configurations {
+    testImplementation {
+        extendsFrom(compileOnly)
+    }
+}
+
+tasks.named("dokkaHtml") {
+    outputDirectory.set(file(project.buildDir.absolutePath + '/dokka'))
+}
+
+publishing {
+    repositories {
+        if(System.getenv('env') == 'prod'){
+            maven {
+                name = 'TheProgramSrcRepository'
+                credentials.username = System.getenv('NEXUS_USERNAME')
+                credentials.password = System.getenv('NEXUS_PASSWORD')
+                url = uri("https://repo.theprogramsrc.xyz/repository/simplecoreapi-modules/")
+            }
+        }else{
+            mavenLocal()
+        }
+    }
+    publications {
+        mavenKotlin(MavenPublication) { publication ->
+            artifactId = 'commandsmodule'
+
+            from components.java
+
+            pom.withXml {
+                asNode().appendNode('packaging', 'jar')
+                if(asNode().get('dependencies')[0] != null) {
+                    asNode().remove(asNode().get('dependencies')[0])
+                }
+            }
+        }
+    }
+}
+
+publish.dependsOn clean, test, jar, shadowJar
