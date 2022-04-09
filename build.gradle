@@ -1,10 +1,10 @@
 import org.apache.tools.ant.filters.ReplaceTokens
 
 plugins {
-    id 'org.jetbrains.kotlin.jvm' version '1.6.10'
+    id 'org.jetbrains.kotlin.jvm' version '1.6.20'
     id 'maven-publish'
     id 'com.github.johnrengelman.shadow' version '7.1.2'
-    id 'org.jetbrains.dokka' version '1.6.0'
+    id 'org.jetbrains.dokka' version '1.6.10'
 }
 
 def projectVersion = (System.getenv("VERSION") ?: '0.1.0-SNAPSHOT').replaceFirst("v", "").replace('/', '')
@@ -28,10 +28,10 @@ repositories {
 }
 
 dependencies {
-    compileOnly 'org.jetbrains.kotlin:kotlin-stdlib:1.6.10'
+    compileOnly 'org.jetbrains.kotlin:kotlin-stdlib:1.6.20'
     compileOnly 'org.spigotmc:spigot-api:1.18.1-R0.1-SNAPSHOT'
     compileOnly 'net.md-5:bungeecord-api:1.18-R0.1-SNAPSHOT'
-    compileOnly 'xyz.theprogramsrc:simplecoreapi:0.3.1-SNAPSHOT'
+    compileOnly 'xyz.theprogramsrc:simplecoreapi:0.3.4-SNAPSHOT'
     compileOnly 'xyz.theprogramsrc:translationsmodule:0.1.5-SNAPSHOT'
     compileOnly 'xyz.theprogramsrc:tasksmodule:0.1.0-SNAPSHOT'
     compileOnly 'xyz.theprogramsrc:filesmodule:0.1.1-SNAPSHOT'

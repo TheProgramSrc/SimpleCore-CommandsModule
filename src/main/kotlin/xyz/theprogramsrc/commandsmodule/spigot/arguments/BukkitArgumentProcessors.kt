@@ -2,7 +2,42 @@ package xyz.theprogramsrc.commandsmodule.spigot.arguments
 
 import org.bukkit.Bukkit
 import org.bukkit.Location
+import org.bukkit.OfflinePlayer
 import org.bukkit.World
+import org.bukkit.entity.Player
+import xyz.theprogramsrc.commandsmodule.objects.arguments.ArgumentProcessor
+
+object BukkitArgumentProcessors {
+
+    private var loaded = false
+
+    fun load(){
+        check(!loaded) { "Bukkit Argument processors already loaded" }
+        ArgumentProcessor.register(mapOf(
+            Player::class.java to PlayerArgumentProcessor(),
+            OfflinePlayer::class.java to OfflinePlayerArgumentProcessor(),
+            World::class.java to WorldArgumentProcessor(),
+            Location::class.java to LocationArgumentProcessor()
+        ))
+    }
+
+}
+
+class PlayerArgumentProcessor: ArgumentProcessor<Player> {
+
+    override fun validate(raw: String): Boolean = Bukkit.getOnlinePlayers().any { it.name == raw || it.uniqueId.toString() == raw }
+
+    override fun get(raw: String): Player = Bukkit.getOnlinePlayers().first { it.name == raw || it.uniqueId.toString() == raw }
+
+}
+
+class OfflinePlayerArgumentProcessor: ArgumentProcessor<OfflinePlayer> {
+
+    override fun validate(raw: String): Boolean = Bukkit.getOfflinePlayers().any { it.name == raw || it.uniqueId.toString() == raw }
+
+    override fun get(raw: String): OfflinePlayer = Bukkit.getOfflinePlayers().first { it.name == raw || it.uniqueId.toString() == raw }
+
+}
 
 class WorldArgumentProcessor: ArgumentProcessor<World> {
 

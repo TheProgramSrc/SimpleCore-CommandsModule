@@ -1,4 +1,4 @@
-package xyz.theprogramsrc.commandsmodule.spigot.arguments
+package xyz.theprogramsrc.commandsmodule.objects.arguments
 
 class UUIDArgumentProcessor: ArgumentProcessor<String> {
 

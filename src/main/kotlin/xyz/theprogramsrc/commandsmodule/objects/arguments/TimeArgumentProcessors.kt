@@ -1,4 +1,4 @@
-package xyz.theprogramsrc.commandsmodule.spigot.arguments
+package xyz.theprogramsrc.commandsmodule.objects.arguments
 
 import xyz.theprogramsrc.commandsmodule.Main
 import java.time.LocalDateTime
