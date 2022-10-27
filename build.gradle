@@ -28,7 +28,7 @@ repositories {
 }
 
 dependencies {
-    compileOnly 'org.jetbrains.kotlin:kotlin-stdlib:1.7.10'
+    compileOnly 'org.jetbrains.kotlin:kotlin-stdlib:1.7.20'
     compileOnly 'org.spigotmc:spigot-api:1.18.1-R0.1-SNAPSHOT'
     compileOnly 'net.md-5:bungeecord-api:1.18-R0.1-SNAPSHOT'
     compileOnly 'xyz.theprogramsrc:simplecoreapi:0.3.4-SNAPSHOT'
