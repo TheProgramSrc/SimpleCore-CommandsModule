@@ -36,13 +36,18 @@ jobs:
         run: chmod +x gradlew
       # Clean, Test, Publish and Build (in that order to save the artifact to the action)
       - name: Test, Deploy and Build with Gradle
-        run: ./gradlew clean test publish shadow dokkaHtml
+        run: ./gradlew clean test publish shadow dokkaHtml --no-daemon
       # Now we store the artifact in the action
       - name: Upload the artifact
         uses: actions/upload-artifact@v3
         with:
           name: CommandsModule
           path: ./build/libs/CommandsModule-${{ env.VERSION }}.jar
+      # Here we upload the binary to the release
+      - name: Upload to release
+        uses: JasonEtco/upload-to-release@master
+        with:
+          args: ./build/libs/CommandsModule-${{ env.VERSION }}.jar application/java-archive
       # Now we deploy the documents to GitHub pages
       - name: Deploy Dokka
         uses: JamesIves/github-pages-deploy-action@v4.4.1
