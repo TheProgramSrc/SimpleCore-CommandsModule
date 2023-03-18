@@ -13,7 +13,7 @@ import xyz.theprogramsrc.commandsmodule.objects.arguments.Arguments
 import xyz.theprogramsrc.tasksmodule.spigot.SpigotTasks
 
 /**
- * Representation of a command
+ * Representation of a spigot command
  * @param name The name of the command
  * @param onExecute The function to execute when the command is executed.
  */
@@ -32,7 +32,10 @@ class Command(val name: String, val onExecute: (CommandExecutor) -> Unit = {}) {
     val aliases: MutableList<String> = mutableListOf()
     val subCommands: MutableList<SubCommand> = mutableListOf()
     val requirements: MutableList<CommandRequirement<CommandSender>> = mutableListOf()
-    private var registered = false
+    
+    companion object {
+        private var registered = false
+    }
 
     init {
         tabCompleter = { sender, args ->
@@ -55,7 +58,7 @@ class Command(val name: String, val onExecute: (CommandExecutor) -> Unit = {}) {
                                 emptyList() // If there are no completions nor arguments show nothing
                             }
                         }.filter {
-                            it.lowercase().startsWith(args[args.size - 1].lowercase())
+                            it.lowercase().startsWith(args.last().lowercase())
                         } // Show the arguments of the sub command that matches the argument depth
                     } else { // If there is only 1 argument
                         subCommands.map { it.name } // Show the sub commands
@@ -159,7 +162,7 @@ class Command(val name: String, val onExecute: (CommandExecutor) -> Unit = {}) {
      */
     private fun register(): Boolean {
         check(!registered) { "Command $name is already registered" }
-        try {
+        return try {
             val command = object : BukkitCommand(this.name, this.description ?: "", this.usage ?: "/$name", aliases) {
                 override fun execute(sender: CommandSender, commandLabel: String, args: Array<String>): Boolean {
                     if(commandType == CommandType.PLAYER && sender !is Player) {
@@ -231,10 +234,10 @@ class Command(val name: String, val onExecute: (CommandExecutor) -> Unit = {}) {
             val commandMap = commandMapField.get(Bukkit.getServer()) as CommandMap
             commandMap.register("command", command)
             registered = true
-            return true
+            true
         } catch (e: Exception) {
             e.printStackTrace()
-            return false
+            false
         }
     }
 }
