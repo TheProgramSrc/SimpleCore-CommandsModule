@@ -36,7 +36,7 @@ dependencies {
     compileOnly 'xyz.theprogramsrc:tasksmodule:0.1.0-SNAPSHOT'
     compileOnly 'xyz.theprogramsrc:filesmodule:0.1.1-SNAPSHOT'
 
-    testImplementation 'org.junit.jupiter:junit-jupiter:5.9.1'
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.11.3'
 }
 
 shadowJar {
